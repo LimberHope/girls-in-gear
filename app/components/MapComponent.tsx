@@ -87,6 +87,7 @@ interface MapComponentProps {
   selectedLocation: string;
   searchQuery: string;
   searchLocationCoords?: [number, number] | null;
+  clickedProgramCoords?: [number, number] | null;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
@@ -94,6 +95,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   selectedLocation,
   searchQuery,
   searchLocationCoords,
+  clickedProgramCoords,
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -203,11 +205,18 @@ const MapComponent: React.FC<MapComponentProps> = ({
     addProgramMarkers(programs);
   }, [programs]); // Add markers whenever the programs prop changes
 
-  // Effect to update map view based on selected location or search query
+  // Effect to update map view based on selected location, search query, or clicked program
   useEffect(() => {
     if (!map.current) return;
 
-    if (searchQuery.trim()) {
+    if (clickedProgramCoords) {
+      // If a program in the list was clicked, fly to its coordinates
+      map.current.flyTo({
+        center: clickedProgramCoords,
+        zoom: 14, // Adjust zoom level as needed for individual program locations
+        duration: 2000,
+      });
+    } else if (searchQuery.trim()) {
       // Handle map view for search query - This logic might need to be passed down or handled differently
       // For now, it's commented out or simplified as map component shouldn't directly handle search API calls
       // You would likely want the parent component to handle search and pass down the center/zoom
@@ -235,7 +244,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
        });
     }
 
-  }, [selectedLocation, searchQuery, searchLocationCoords]); // Rerun when selectedLocation or searchQuery changes
+  }, [selectedLocation, searchQuery, searchLocationCoords, clickedProgramCoords]); // Add clickedProgramCoords to dependencies
 
 
   return (

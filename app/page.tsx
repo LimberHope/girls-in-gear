@@ -153,6 +153,7 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [filteredPrograms, setFilteredPrograms] = useState<Program[]>(programsData.programs);
   const [searchLocationCoords, setSearchLocationCoords] = useState<[number, number] | null>(null);
+  const [clickedProgramCoords, setClickedProgramCoords] = useState<[number, number] | null>(null);
 
   // Mapbox refs and functions removed - now in MapComponent
   // const mapContainer = useRef<HTMLDivElement>(null);
@@ -288,6 +289,30 @@ export default function Home() {
     setFilteredPrograms(data.programs); // MapComponent will add markers for all programs
     // Removed direct call to addProgramMarkers here
     // addProgramMarkers(data.programs);
+    setSearchLocationCoords(null);
+    setClickedProgramCoords(null); // Clear clicked program coords on reset
+  };
+
+  // Handle clicking a program in the list
+  const handleProgramClick = async (program: Program) => {
+    setClickedProgramCoords(null); // Clear previous clicked program coords
+     try {
+      const address = `${program.address} ${program.address2} ${program.city} ${program.state} ${program.zip}`;
+      const response = await axios.get(
+        `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(
+          address
+        )}&access_token=${mapboxgl.accessToken}`
+      );
+
+      if (response.data.features && response.data.features.length > 0) {
+        const [lng, lat] = response.data.features[0].geometry.coordinates;
+        setClickedProgramCoords([lng, lat]); // Set clicked program coords
+      } else {
+         console.error('Could not geocode address for clicked program:', address);
+      }
+    } catch (error) {
+      console.error('Error geocoding address for clicked program:', error);
+    }
   };
 
   return (
@@ -371,7 +396,7 @@ export default function Home() {
             </p>
           </div>
 
-          <ProgramList programs={filteredPrograms} />
+          <ProgramList programs={filteredPrograms} handleProgramClick={handleProgramClick} />
         </div>
 
         <div className="w-full lg:w-2/3 relative h-full min-h-0 min-w-0">
@@ -380,6 +405,7 @@ export default function Home() {
               selectedLocation={selectedLocation} 
               searchQuery={searchQuery} 
               searchLocationCoords={searchLocationCoords} 
+              clickedProgramCoords={clickedProgramCoords}
             />
         </div>
       </div>

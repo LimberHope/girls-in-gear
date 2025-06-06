@@ -17,13 +17,18 @@ type Program = {
 
 interface ProgramListProps {
   programs: Program[];
+  handleProgramClick: (program: Program) => Promise<void>;
 }
 
-const ProgramList: React.FC<ProgramListProps> = ({ programs }) => {
+const ProgramList: React.FC<ProgramListProps> = ({ programs, handleProgramClick }) => {
   return (
-    <div className="space-y-4  overflow-y-auto">
+    <div className="space-y-4 max-h-96 overflow-y-auto">
       {programs?.map((program, index) => (
-        <div key={index} className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+        <div 
+          key={index} 
+          className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+          onClick={() => handleProgramClick(program)}
+        >
           <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
             👟
           </div>

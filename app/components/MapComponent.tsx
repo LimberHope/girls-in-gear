@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import axios from 'axios';
+import React, { useEffect, useRef } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import axios from "axios";
 
 // Replace with your Mapbox access token - Consider moving this to an environment variable
-mapboxgl.accessToken = 'pk.eyJ1IjoiZ2lybHNpbmdlYXIiLCJhIjoiY2xwcmF1ajNlMDdiOTJpb2xpcjI5dXF3YiJ9.gAAFitjNaaaHyWJ86qdG9A';
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiZ2lybHNpbmdlYXIiLCJhIjoiY2xwcmF1ajNlMDdiOTJpb2xpcjI5dXF3YiJ9.gAAFitjNaaaHyWJ86qdG9A";
 
 type Location = {
   center: [number, number];
@@ -151,16 +152,15 @@ const MapComponent: React.FC<MapComponentProps> = ({
           // Create popup content
           const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
             <div class="p-4 rounded-xl">
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 bg-cyan-400 rounded-full flex items-center justify-center text-white text-sm">
-                  👟
-                </div>
+              <div class="flex items-start gap-3">                
                 <div class="flex-1">
                   <h4 class="font-semibold text-cyan-600 text-sm mb-1">
-                    ${program.programType}
+                    Girls on the Run ${program.region}
                   </h4>
                   <p class="text-xs text-gray-600 mb-1">
-                    ${program.region}
+                    ${program.address}, ${program.city}, ${program.state} ${
+            program.zip
+          }
                   </p>
                   <p class="text-xs text-gray-500 mb-1">📞 (555)-55555</p>
                   <p class="text-xs text-cyan-500 mb-3">
@@ -196,7 +196,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
           markers.current.push(marker);
         }
       } catch (error) {
-        console.error('Error geocoding address:', error);
+        console.error("Error geocoding address:", error);
       }
     }
   };
@@ -227,7 +227,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
           duration: 2000,
         });
       }
-
     } else if (selectedLocation && DEFAULT_LOCATIONS[selectedLocation]) {
       // Handle map view for selected location
       map.current.flyTo({
@@ -236,16 +235,19 @@ const MapComponent: React.FC<MapComponentProps> = ({
         duration: 2000,
       });
     } else {
-       // Default view or reset
-       map.current.flyTo({
-         center: DEFAULT_LOCATIONS["Select Location"].center,
-         zoom: DEFAULT_LOCATIONS["Select Location"].zoom,
-         duration: 2000,
-       });
+      // Default view or reset
+      map.current.flyTo({
+        center: DEFAULT_LOCATIONS["Select Location"].center,
+        zoom: DEFAULT_LOCATIONS["Select Location"].zoom,
+        duration: 2000,
+      });
     }
-
-  }, [selectedLocation, searchQuery, searchLocationCoords, clickedProgramCoords]); // Add clickedProgramCoords to dependencies
-
+  }, [
+    selectedLocation,
+    searchQuery,
+    searchLocationCoords,
+    clickedProgramCoords,
+  ]); // Add clickedProgramCoords to dependencies
 
   return (
     <div
@@ -255,4 +257,4 @@ const MapComponent: React.FC<MapComponentProps> = ({
   );
 };
 
-export default MapComponent; 
+export default MapComponent;

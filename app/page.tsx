@@ -2,102 +2,142 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="px-4 py-8 bg-[#fbf2fc] size-full">
+        <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-cyan-400 mb-6">Where are we located?</h1>
+            
+            <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
+                <div className="relative">
+                    <select className="bg-cyan-400 text-white px-6 py-3 rounded-full font-semibold appearance-none pr-10 cursor-pointer hover:bg-cyan-500 transition-colors">
+                        <option>Select Location</option>
+                        <option>Alaska</option>
+                        <option>Virginia</option>
+                        <option>Other States</option>
+                    </select>
+                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white pointer-events-none" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                
+                <div className="relative">
+                    <input type="text" placeholder="Vienna, VA 22181" className="px-6 py-3 rounded-full border-2 border-gray-200 focus:border-cyan-400 focus:outline-none w-64" />
+                    <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                
+                <button className="bg-cyan-200 text-cyan-700 px-6 py-3 rounded-full font-semibold hover:bg-cyan-300 transition-colors">
+                    Reset Map
+                </button>
+            </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="flex flex-col lg:flex-row gap-6">
+            <div className="lg:w-1/3 bg-white rounded-2xl p-6 shadow-lg">
+                <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">48 Local Chapters Found</h3>
+                    <p className="text-gray-600 text-sm">Girls in your area need your support!</p>
+                </div>
+
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                    <div className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
+                            👟
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-cyan-600 text-sm">Girls on the Run Alaska</h4>
+                            <p className="text-xs text-gray-600">Anchorage, Matanuska Susitna</p>
+                            <p className="text-xs text-gray-500">📞 (907) 306-0789</p>
+                            <p className="text-xs text-cyan-500">🌐 www.gotrsouthcentralak.org</p>
+                        </div>
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
+                            👟
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-cyan-600 text-sm">Girls on the Run Southcentral Ala...</h4>
+                            <p className="text-xs text-gray-600">Anchorage, Matanuska Susitna</p>
+                            <p className="text-xs text-gray-500">📞 (907) 306-0789</p>
+                            <p className="text-xs text-cyan-500">🌐 www.gotrsouthcentralak.org</p>
+                        </div>
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
+                            👟
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-cyan-600 text-sm">Girls on the Run Southcentral Ala...</h4>
+                            <p className="text-xs text-gray-600">Anchorage, Matanuska Susitna</p>
+                            <p className="text-xs text-gray-500">📞 (907) 306-0789</p>
+                            <p className="text-xs text-cyan-500">🌐 www.gotrsouthcentralak.org</p>
+                        </div>
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
+                            👟
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-cyan-600 text-sm">Girls on the Run Southcentral Ala...</h4>
+                            <p className="text-xs text-gray-600">Anchorage, Matanuska Susitna</p>
+                            <p className="text-xs text-gray-500">📞 (907) 306-0789</p>
+                            <p className="text-xs text-cyan-500">🌐 www.gotrsouthcentralak.org</p>
+                        </div>
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
+                            👟
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-cyan-600 text-sm">Girls on the Run Southcentral Ala...</h4>
+                            <p className="text-xs text-gray-600">Anchorage, Matanuska Susitna</p>
+                            <p className="text-xs text-gray-500">📞 (907) 306-0789</p>
+                            <p className="text-xs text-cyan-500">🌐 www.gotrsouthcentralak.org</p>
+                        </div>
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div className="lg:w-2/3 relative">
+                <div id="map" className="w-full h-96 lg:h-full rounded-2xl shadow-lg min-h-[400px]"></div>
+                
+                  <div className="absolute top-4 right-4 bg-white rounded-lg p-4 shadow-lg max-w-xs">
+                    <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-cyan-400 rounded-full flex items-center justify-center text-white text-sm">
+                            👟
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-cyan-600 text-sm mb-1">Girls on the Run Southcentral Alaska</h4>
+                            <p className="text-xs text-gray-600 mb-1">Anchorage, Matanuska Susitna</p>
+                            <p className="text-xs text-gray-500 mb-1">📞 (907) 306-0789</p>
+                            <p className="text-xs text-cyan-500 mb-3">🌐 www.gotrsouthcentralak.org</p>
+                            <button className="bg-cyan-400 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-cyan-500 transition-colors">
+                                View Directions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
   );
 }

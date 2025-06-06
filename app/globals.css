@@ -52,4 +52,17 @@ body {
   @apply px-6 py-3 rounded-full border-2 border-gray-200 focus:border-cyan-400 focus:outline-none w-64 text-gray-900 placeholder-gray-400;
 }
 
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-cyan-400 rounded-full hover:bg-cyan-500 transition-colors duration-200;
+}
+
 

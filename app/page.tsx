@@ -130,13 +130,14 @@ export default function Home() {
   return (
     <div className="w-screen h-screen min-h-0 min-w-0 flex flex-col bg-[#fbf2fc]">
       <div className="text-center mb-4 pt-4">
-        <h1 className="text-4xl md:text-5xl font-bold text-cyan-400 mb-4">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#1FC0DD' }}>
           Where are we located?
         </h1>
         <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-4">
           <div className="relative">
             <select 
-              className="bg-cyan-400 text-white px-6 py-3 rounded-full font-semibold appearance-none pr-10 cursor-pointer hover:bg-cyan-500 transition-colors"
+              className="text-white px-6 py-3 rounded-full font-semibold appearance-none pr-10 cursor-pointer transition-colors"
+              style={{ backgroundColor: '#1FC0DD' }}
               value={selectedLocation}
               onChange={(e) => handleLocationChange(e.target.value)}
             >
@@ -378,7 +379,9 @@ export default function Home() {
                 <p className="text-xs text-cyan-500 mb-3">
                   🌐 www.gotrsouthcentralak.org
                 </p>
-                <button className="bg-cyan-400 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-cyan-500 transition-colors">
+                <button className="bg-cyan-400 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-cyan-500 transition-colors"
+                  style={{ backgroundColor: '#1FC0DD' }}
+                >
                   View Directions
                 </button>
               </div>

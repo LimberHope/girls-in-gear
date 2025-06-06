@@ -128,13 +128,12 @@ export default function Home() {
 
   console.log(data);
   return (
-    <div className="px-4 py-8 bg-[#fbf2fc] size-full">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-cyan-400 mb-6">
+    <div className="w-screen h-screen min-h-0 min-w-0 flex flex-col bg-[#fbf2fc]">
+      <div className="text-center mb-4 pt-4">
+        <h1 className="text-4xl md:text-5xl font-bold text-cyan-400 mb-4">
           Where are we located?
         </h1>
-
-        <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-4">
           <div className="relative">
             <select 
               className="bg-cyan-400 text-white px-6 py-3 rounded-full font-semibold appearance-none pr-10 cursor-pointer hover:bg-cyan-500 transition-colors"
@@ -159,7 +158,6 @@ export default function Home() {
               ></path>
             </svg>
           </div>
-
           <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
@@ -187,15 +185,13 @@ export default function Home() {
               </svg>
             </button>
           </form>
-
           <button className="bg-cyan-200 text-cyan-700 px-6 py-3 rounded-full font-semibold hover:bg-cyan-300 transition-colors">
             Reset Map
           </button>
         </div>
       </div>
-
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="lg:w-1/3 bg-white rounded-2xl p-6 shadow-lg">
+      <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden w-[80vw] mx-auto">
+        <div className="w-full lg:w-1/3 bg-white rounded-none p-6 shadow-lg h-full overflow-y-auto">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
               48 Local Chapters Found
@@ -204,8 +200,7 @@ export default function Home() {
               Girls in your area need your support!
             </p>
           </div>
-
-          <div className="space-y-4 max-h-96 overflow-y-auto">
+          <div className="space-y-4 max-h-full overflow-y-auto">
             <div className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
                 👟
@@ -362,13 +357,11 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        <div className="lg:w-2/3 relative">
+        <div className="w-full lg:w-2/3 relative h-full min-h-0 min-w-0">
           <div
             ref={mapContainer}
-            className="w-full h-96 lg:h-full rounded-2xl shadow-lg min-h-[400px]"
+            className="w-full h-full rounded-none shadow-lg min-h-0 min-w-0"
           ></div>
-
           <div className="absolute top-4 right-4 bg-white rounded-lg p-4 shadow-lg max-w-xs">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-cyan-400 rounded-full flex items-center justify-center text-white text-sm">

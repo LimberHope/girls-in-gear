@@ -3,12 +3,13 @@
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import programsData from './data/programs.json';
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import programsData from "./data/programs.json";
 
 // Replace with your Mapbox access token
-mapboxgl.accessToken = 'pk.eyJ1IjoiZ2lybHNpbmdlYXIiLCJhIjoiY2xwcmF1ajNlMDdiOTJpb2xpcjI5dXF3YiJ9.gAAFitjNaaaHyWJ86qdG9A';
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiZ2lybHNpbmdlYXIiLCJhIjoiY2xwcmF1ajNlMDdiOTJpb2xpcjI5dXF3YiJ9.gAAFitjNaaaHyWJ86qdG9A";
 
 const URI = "http://localhost:4000/program";
 
@@ -24,13 +25,13 @@ type Locations = {
 // Location data with coordinates
 const DEFAULT_LOCATIONS: Locations = {
   "Select Location": { center: [-120.0, 40.0], zoom: 4.5 },
-  "Alaska": { center: [-149.4937, 61.3707], zoom: 4 },
-  "Virginia": { center: [-78.6569, 37.5215], zoom: 6 },
-  "California": { center: [-119.4179, 37.1848], zoom: 5 },
-  "Oregon": { center: [-120.5542, 43.8041], zoom: 6 },
-  "Washington": { center: [-120.4472, 47.3826], zoom: 6 },
-  "Nevada": { center: [-116.4194, 38.8026], zoom: 6 },
-  "Arizona": { center: [-111.0937, 34.0489], zoom: 6 }
+  Alaska: { center: [-149.4937, 61.3707], zoom: 4 },
+  Virginia: { center: [-78.6569, 37.5215], zoom: 6 },
+  California: { center: [-119.4179, 37.1848], zoom: 5 },
+  Oregon: { center: [-120.5542, 43.8041], zoom: 6 },
+  Washington: { center: [-120.4472, 47.3826], zoom: 6 },
+  Nevada: { center: [-116.4194, 38.8026], zoom: 6 },
+  Arizona: { center: [-111.0937, 34.0489], zoom: 6 },
 };
 
 type Program = {
@@ -49,11 +50,16 @@ type Program = {
 };
 
 export default function Home() {
-  const [data, setData] = useState<{ programs: Program[] }>({ programs: programsData.programs });
-  const [selectedLocation, setSelectedLocation] = useState<string>("Select Location");
+  const [data, setData] = useState<{ programs: Program[] }>({
+    programs: programsData.programs,
+  });
+  const [selectedLocation, setSelectedLocation] =
+    useState<string>("Select Location");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [filteredPrograms, setFilteredPrograms] = useState<Program[]>(programsData.programs);
+  const [filteredPrograms, setFilteredPrograms] = useState<Program[]>(
+    programsData.programs
+  );
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
@@ -64,15 +70,15 @@ export default function Home() {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: "mapbox://styles/mapbox/streets-v12",
       center: DEFAULT_LOCATIONS["Select Location"].center,
       zoom: DEFAULT_LOCATIONS["Select Location"].zoom,
       minZoom: 3,
-      maxZoom: 15
+      maxZoom: 15,
     });
 
     // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
 
     // Clean up on unmount
     return () => {
@@ -84,7 +90,7 @@ export default function Home() {
 
   // Function to clear all markers
   const clearMarkers = () => {
-    markers.current.forEach(marker => marker.remove());
+    markers.current.forEach((marker) => marker.remove());
     markers.current = [];
   };
 
@@ -104,7 +110,7 @@ export default function Home() {
 
         if (response.data.features && response.data.features.length > 0) {
           const [lng, lat] = response.data.features[0].geometry.coordinates;
-          
+
           // Create popup content
           const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
             <div class="p-4 rounded-lg">
@@ -122,7 +128,17 @@ export default function Home() {
                   </p>
                   <div class="mt-4 text-center">
                     <button 
-                      onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(program.address + ' ' + program.address2 + ' ' + program.city + ' ' + program.state + ' ' + program.zip)}', '_blank')"
+                      onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                        program.address +
+                          " " +
+                          program.address2 +
+                          " " +
+                          program.city +
+                          " " +
+                          program.state +
+                          " " +
+                          program.zip
+                      )}', '_blank')"
                       class="block w-full bg-cyan-400 text-white px-4 py-3 rounded-full text-xs font-semibold hover:bg-cyan-500 transition-colors"
                     >
                       View Directions
@@ -138,11 +154,11 @@ export default function Home() {
             .setLngLat([lng, lat])
             .setPopup(popup)
             .addTo(map.current);
-          
+
           markers.current.push(marker);
         }
       } catch (error) {
-        console.error('Error geocoding address:', error);
+        console.error("Error geocoding address:", error);
       }
     }
   };
@@ -150,12 +166,13 @@ export default function Home() {
   // Handle location change
   const handleLocationChange = (location: string) => {
     setSelectedLocation(location);
-    
+
     // Filter programs based on selected location
     if (location !== "Select Location") {
-      const filtered = data.programs.filter(program => 
-        program.state === location || 
-        (location === "DMV" && ["DC", "MD", "VA"].includes(program.state))
+      const filtered = data.programs.filter(
+        (program) =>
+          program.state === location ||
+          (location === "DMV" && ["DC", "MD", "VA"].includes(program.state))
       );
       setFilteredPrograms(filtered);
       addProgramMarkers(filtered);
@@ -169,7 +186,7 @@ export default function Home() {
       map.current.flyTo({
         center: DEFAULT_LOCATIONS[location].center,
         zoom: DEFAULT_LOCATIONS[location].zoom,
-        duration: 2000
+        duration: 2000,
       });
     }
   };
@@ -189,13 +206,14 @@ export default function Home() {
 
       if (response.data.features && response.data.features.length > 0) {
         const [lng, lat] = response.data.features[0].geometry.coordinates;
-        
+
         clearMarkers();
 
         // Filter programs that match the search query
-        const matchingPrograms = data.programs.filter(program => 
-          program.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          program.address2.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchingPrograms = data.programs.filter(
+          (program) =>
+            program.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            program.address2.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
         // Update filtered programs
@@ -211,9 +229,13 @@ export default function Home() {
               )}&access_token=${mapboxgl.accessToken}`
             );
 
-            if (programResponse.data.features && programResponse.data.features.length > 0) {
-              const [programLng, programLat] = programResponse.data.features[0].geometry.coordinates;
-              
+            if (
+              programResponse.data.features &&
+              programResponse.data.features.length > 0
+            ) {
+              const [programLng, programLat] =
+                programResponse.data.features[0].geometry.coordinates;
+
               // Create popup content
               const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
                 <div class="p-4 rounded-xl">
@@ -234,7 +256,17 @@ export default function Home() {
                       </p>
                       <div class="mt-4 text-center">
                         <button 
-                          onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(program.address + ' ' + program.address2 + ' ' + program.city + ' ' + program.state + ' ' + program.zip)}', '_blank')"
+                          onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                            program.address +
+                              " " +
+                              program.address2 +
+                              " " +
+                              program.city +
+                              " " +
+                              program.state +
+                              " " +
+                              program.zip
+                          )}', '_blank')"
                           class="block w-full bg-cyan-400 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-cyan-500 transition-colors"
                         >
                           View Directions
@@ -250,11 +282,11 @@ export default function Home() {
                 .setLngLat([programLng, programLat])
                 .setPopup(popup)
                 .addTo(map.current);
-              
+
               markers.current.push(marker);
             }
           } catch (error) {
-            console.error('Error geocoding program address:', error);
+            console.error("Error geocoding program address:", error);
           }
         }
 
@@ -262,11 +294,11 @@ export default function Home() {
         map.current.flyTo({
           center: [lng, lat],
           zoom: 12,
-          duration: 2000
+          duration: 2000,
         });
       }
     } catch (error) {
-      console.error('Error searching location:', error);
+      console.error("Error searching location:", error);
     } finally {
       setIsSearching(false);
     }
@@ -275,14 +307,14 @@ export default function Home() {
   // Handle reset
   const handleReset = () => {
     if (!map.current) return;
-    
+
     clearMarkers();
-    
+
     // Reset to default view showing continental USA
     map.current.flyTo({
       center: DEFAULT_LOCATIONS["Select Location"].center,
       zoom: DEFAULT_LOCATIONS["Select Location"].zoom,
-      duration: 2000
+      duration: 2000,
     });
 
     // Reset selected location and show all programs
@@ -295,14 +327,17 @@ export default function Home() {
   return (
     <div className="w-screen h-screen min-h-0 min-w-0 flex flex-col bg-[#fbf2fc]">
       <div className="text-center mb-4 pt-4">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#1FC0DD' }}>
+        <h1
+          className="text-4xl md:text-5xl font-bold mb-4"
+          style={{ color: "#1FC0DD" }}
+        >
           Where are we located?
         </h1>
         <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-4">
           <div className="relative">
-            <select 
+            <select
               className="text-white px-6 py-3 rounded-full font-semibold appearance-none pr-10 cursor-pointer transition-colors"
-              style={{ backgroundColor: '#1FC0DD' }}
+              style={{ backgroundColor: "#1FC0DD" }}
               value={selectedLocation}
               onChange={(e) => handleLocationChange(e.target.value)}
             >
@@ -337,11 +372,7 @@ export default function Home() {
               className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-cyan-400 transition-colors"
               disabled={isSearching}
             >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -352,7 +383,7 @@ export default function Home() {
             </button>
           </form>
 
-          <button 
+          <button
             onClick={handleReset}
             className="bg-cyan-200 text-cyan-700 px-6 py-3 rounded-full font-semibold hover:bg-cyan-300 transition-colors"
           >
@@ -360,7 +391,7 @@ export default function Home() {
           </button>
         </div>
       </div>
-      <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden w-[80vw] mx-auto">
+      <div className="flex flex-1 min-h-0 min-w-0 w-[80vw] mx-auto">
         <div className="w-full lg:w-1/3 bg-white rounded-none p-6 shadow-lg h-full overflow-y-auto">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
@@ -371,9 +402,12 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="space-y-4 max-h-96 overflow-y-auto">
+          <div className="space-y-4  overflow-y-auto">
             {filteredPrograms?.map((program, index) => (
-              <div key={index} className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div
+                key={index}
+                className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+              >
                 <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
                   👟
                 </div>
@@ -382,10 +416,13 @@ export default function Home() {
                     {program.programType}
                   </h4>
                   <p className="text-xs text-gray-600">
-                    {program.address}, {program.city}, {program.state} {program.zip}
+                    {program.address}, {program.city}, {program.state}{" "}
+                    {program.zip}
                   </p>
                   <p className="text-xs text-gray-500">📞 (555)-55555</p>
-                  <p className="text-xs text-gray-500">Age Range: {program.ageRange}</p>
+                  <p className="text-xs text-gray-500">
+                    Age Range: {program.ageRange}
+                  </p>
                   <p className="text-xs text-cyan-500">
                     {program.meetingDay} {program.meetingTime}
                   </p>

@@ -68,7 +68,7 @@ const ProgramList: React.FC<ProgramListProps> = ({
               Girls on the Run {program.region}
             </h4>
             <p className="text-xs text-gray-600">
-              {program.address}, {program.city}, {program.state} {program.zip}
+              {program.address}, {program.city}
             </p>
 
             <p className="text-xs text-gray-500 mb-1">

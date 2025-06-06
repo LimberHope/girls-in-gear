@@ -186,7 +186,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                     Girls on the Run ${program.region}
                   </h4>
                   <p class="text-xs text-gray-600 mb-1">
-                    ${program.address}, ${program.city}, ${program.state} ${program.zip}
+                    ${program.address}, ${program.city}
                   </p>
                   <p class="text-xs text-gray-500 mb-1">
                     <svg class="inline-block w-3 h-3 mr-1 text-cyan-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">

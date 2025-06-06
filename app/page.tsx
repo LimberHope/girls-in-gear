@@ -11,8 +11,30 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZ2lybHNpbmdlYXIiLCJhIjoiY2xwcmF1ajNlMDdiOTJpb
 
 const URI = "http://localhost:4000/program";
 
+type Location = {
+  center: [number, number];
+  zoom: number;
+};
+
+type Locations = {
+  [key: string]: Location;
+};
+
+// Location data with coordinates
+const locations: Locations = {
+  "Select Location": { center: [-120.0, 40.0], zoom: 4.5 },
+  "Alaska": { center: [-149.4937, 61.3707], zoom: 4 },
+  "Virginia": { center: [-78.6569, 37.5215], zoom: 6 },
+  "California": { center: [-119.4179, 37.1848], zoom: 5 },
+  "Oregon": { center: [-120.5542, 43.8041], zoom: 6 },
+  "Washington": { center: [-120.4472, 47.3826], zoom: 6 },
+  "Nevada": { center: [-116.4194, 38.8026], zoom: 6 },
+  "Arizona": { center: [-111.0937, 34.0489], zoom: 6 }
+};
+
 export default function Home() {
   const [data, setData] = useState();
+  const [selectedLocation, setSelectedLocation] = useState<string>("Select Location");
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
@@ -32,10 +54,10 @@ export default function Home() {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: [-120.0, 40.0], // Center on western USA
-      zoom: 4.5, // Closer zoom to focus on western states
-      minZoom: 3, // Prevent zooming out too far
-      maxZoom: 15 // Prevent zooming in too close
+      center: locations["Select Location"].center,
+      zoom: locations["Select Location"].zoom,
+      minZoom: 3,
+      maxZoom: 15
     });
 
     // Add navigation controls
@@ -49,6 +71,18 @@ export default function Home() {
     };
   }, []);
 
+  // Handle location change
+  const handleLocationChange = (location: string) => {
+    setSelectedLocation(location);
+    if (map.current && locations[location]) {
+      map.current.flyTo({
+        center: locations[location].center,
+        zoom: locations[location].zoom,
+        duration: 2000 // Animation duration in milliseconds
+      });
+    }
+  };
+
   console.log(data);
   return (
     <div className="px-4 py-8 bg-[#fbf2fc] size-full">
@@ -59,11 +93,16 @@ export default function Home() {
 
         <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
           <div className="relative">
-            <select className="bg-cyan-400 text-white px-6 py-3 rounded-full font-semibold appearance-none pr-10 cursor-pointer hover:bg-cyan-500 transition-colors">
-              <option>Select Location</option>
-              <option>Alaska</option>
-              <option>Virginia</option>
-              <option>Other States</option>
+            <select 
+              className="bg-cyan-400 text-white px-6 py-3 rounded-full font-semibold appearance-none pr-10 cursor-pointer hover:bg-cyan-500 transition-colors"
+              value={selectedLocation}
+              onChange={(e) => handleLocationChange(e.target.value)}
+            >
+              {Object.keys(locations).map((location) => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
             </select>
             <svg
               className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white pointer-events-none"

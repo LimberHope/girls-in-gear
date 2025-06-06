@@ -35,8 +35,11 @@ const locations: Locations = {
 export default function Home() {
   const [data, setData] = useState();
   const [selectedLocation, setSelectedLocation] = useState<string>("Select Location");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const marker = useRef<mapboxgl.Marker | null>(null);
 
   const programRequest = async () => {
     const res = await axios.get(URI);
@@ -78,8 +81,48 @@ export default function Home() {
       map.current.flyTo({
         center: locations[location].center,
         zoom: locations[location].zoom,
-        duration: 2000 // Animation duration in milliseconds
+        duration: 2000
       });
+    }
+  };
+
+  // Handle search
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim() || !map.current) return;
+
+    setIsSearching(true);
+    try {
+      const response = await axios.get(
+        `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(
+          searchQuery
+        )}&access_token=${mapboxgl.accessToken}`
+      );
+
+      if (response.data.features && response.data.features.length > 0) {
+        const [lng, lat] = response.data.features[0].geometry.coordinates;
+        
+        // Remove existing marker if any
+        if (marker.current) {
+          marker.current.remove();
+        }
+
+        // Add new marker
+        marker.current = new mapboxgl.Marker()
+          .setLngLat([lng, lat])
+          .addTo(map.current!);
+
+        // Fly to the location
+        map.current.flyTo({
+          center: [lng, lat],
+          zoom: 12,
+          duration: 2000
+        });
+      }
+    } catch (error) {
+      console.error('Error searching location:', error);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -117,26 +160,33 @@ export default function Home() {
             </svg>
           </div>
 
-          <div className="relative">
+          <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
               placeholder="Vienna, VA 22181"
               className="px-6 py-3 rounded-full border-2 border-gray-200 focus:border-cyan-400 focus:outline-none w-64"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <svg
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+            <button
+              type="submit"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-cyan-400 transition-colors"
+              disabled={isSearching}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              ></path>
-            </svg>
-          </div>
+              <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                ></path>
+              </svg>
+            </button>
+          </form>
 
           <button className="bg-cyan-200 text-cyan-700 px-6 py-3 rounded-full font-semibold hover:bg-cyan-300 transition-colors">
             Reset Map

@@ -164,7 +164,7 @@ export default function Home() {
             <input
               type="text"
               placeholder="Vienna, VA 22181"
-              className="px-6 py-3 rounded-full border-2 border-gray-200 focus:border-cyan-400 focus:outline-none w-64"
+              className="search-input"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

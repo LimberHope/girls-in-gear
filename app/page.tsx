@@ -378,7 +378,7 @@ export default function Home() {
 
           <button
             onClick={handleReset}
-            className="bg-cyan-200 text-cyan-700 px-6 py-3 rounded-full font-semibold hover:bg-cyan-300 transition-colors"
+            className="bg-cyan-200 text-cyan-700 px-6 py-3 rounded-full font-semibold hover:bg-cyan-300 transition-colors cursor-pointer"
           >
             Reset Map
           </button>
@@ -409,6 +409,7 @@ export default function Home() {
             />
         </div>
       </div>
+      <div className="pb-20"></div>
     </div>
   );
 }

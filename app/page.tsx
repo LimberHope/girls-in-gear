@@ -2,12 +2,20 @@
 
 import axios from "axios";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+// Replace with your Mapbox access token
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ2lybHNpbmdlYXIiLCJhIjoiY2xwcmF1ajNlMDdiOTJpb2xpcjI5dXF3YiJ9.gAAFitjNaaaHyWJ86qdG9A';
 
 const URI = "http://localhost:4000/program";
 
 export default function Home() {
   const [data, setData] = useState();
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+
   const programRequest = async () => {
     const res = await axios.get(URI);
     setData(res.data);
@@ -15,6 +23,30 @@ export default function Home() {
 
   useEffect(() => {
     programRequest();
+  }, []);
+
+  useEffect(() => {
+    if (map.current) return; // initialize map only once
+    if (!mapContainer.current) return;
+
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [-120.0, 40.0], // Center on western USA
+      zoom: 4.5, // Closer zoom to focus on western states
+      minZoom: 3, // Prevent zooming out too far
+      maxZoom: 15 // Prevent zooming in too close
+    });
+
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    // Clean up on unmount
+    return () => {
+      if (map.current) {
+        map.current.remove();
+      }
+    };
   }, []);
 
   console.log(data);
@@ -244,7 +276,7 @@ export default function Home() {
 
         <div className="lg:w-2/3 relative">
           <div
-            id="map"
+            ref={mapContainer}
             className="w-full h-96 lg:h-full rounded-2xl shadow-lg min-h-[400px]"
           ></div>
 

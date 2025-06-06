@@ -3,37 +3,19 @@
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
-import programsData from "./data/programs.json";
+import mapboxgl from 'mapbox-gl';
 
-// Replace with your Mapbox access token
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiZ2lybHNpbmdlYXIiLCJhIjoiY2xwcmF1ajNlMDdiOTJpb2xpcjI5dXF3YiJ9.gAAFitjNaaaHyWJ86qdG9A";
+import programsData from './data/programs.json';
 
-const URI = "http://localhost:4000/program";
+import MapComponent from "./components/MapComponent";
+import ProgramList from "./components/ProgramList";
 
-type Location = {
-  center: [number, number];
-  zoom: number;
-};
+// Mapbox access token removed - now handled in MapComponent
+// const mapboxgl.accessToken = 'pk.eyJ1IjoiZ2lybHNpbmdlYXIiLCJhIjoiY2xwcmF1ajNlMDdiOTJpb2xpcjI5dXF3YiJ9.gAAFitjNaaaHyWJ86qdG9A';
 
-type Locations = {
-  [key: string]: Location;
-};
+const URI = "http://localhost:4000/program"; // Still needed for search API call if not moved
 
-// Location data with coordinates
-const DEFAULT_LOCATIONS: Locations = {
-  "Select Location": { center: [-120.0, 40.0], zoom: 4.5 },
-  Alaska: { center: [-149.4937, 61.3707], zoom: 4 },
-  Virginia: { center: [-78.6569, 37.5215], zoom: 6 },
-  California: { center: [-119.4179, 37.1848], zoom: 5 },
-  Oregon: { center: [-120.5542, 43.8041], zoom: 6 },
-  Washington: { center: [-120.4472, 47.3826], zoom: 6 },
-  Nevada: { center: [-116.4194, 38.8026], zoom: 6 },
-  Arizona: { center: [-111.0937, 34.0489], zoom: 6 },
-};
-
+// Location types and DEFAULT_LOCATIONS moved to MapComponent, but Program type is needed here for state
 type Program = {
   programType: string;
   address: string;
@@ -49,165 +31,192 @@ type Program = {
   acceptingVolunteers: string;
 };
 
+// Keep DEFAULT_LOCATIONS and stateAbbreviations here as they are used by filtering/location logic
+type Location = {
+  center: [number, number];
+  zoom: number;
+};
+
+type Locations = {
+  [key: string]: Location;
+};
+
+const DEFAULT_LOCATIONS: Locations = {
+  "Select Location": { center: [-98.5795, 39.8283], zoom: 4.5 },
+  Alabama: { center: [-86.9023, 32.3182], zoom: 6 },
+  Arizona: { center: [-111.0937, 34.0489], zoom: 6 },
+  Arkansas: { center: [-92.3731, 34.9697], zoom: 6 },
+  California: { center: [-119.4179, 36.7783], zoom: 5 },
+  Colorado: { center: [-105.7821, 39.5501], zoom: 6 },
+  Connecticut: { center: [-72.7554, 41.6032], zoom: 7 },
+  Delaware: { center: [-75.5277, 38.9108], zoom: 7 },
+  Florida: { center: [-81.5158, 27.6648], zoom: 6 },
+  Georgia: { center: [-82.9001, 32.1656], zoom: 6 },
+  Idaho: { center: [-114.742, 44.0682], zoom: 6 },
+  Illinois: { center: [-89.3985, 40.6331], zoom: 6 },
+  Indiana: { center: [-86.1349, 40.2672], zoom: 6 },
+  Iowa: { center: [-93.0977, 41.878], zoom: 6 },
+  Kansas: { center: [-98.4842, 39.0119], zoom: 6 },
+  Kentucky: { center: [-84.27, 37.8393], zoom: 6 },
+  Louisiana: { center: [-91.9623, 30.9843], zoom: 6 },
+  Maine: { center: [-69.4455, 45.2538], zoom: 7 },
+  Maryland: { center: [-76.6413, 39.0458], zoom: 7 },
+  Massachusetts: { center: [-71.3824, 42.4072], zoom: 7 },
+  Michigan: { center: [-85.6024, 44.3148], zoom: 6 },
+  Minnesota: { center: [-94.6859, 46.7296], zoom: 6 },
+  Mississippi: { center: [-89.3985, 32.3547], zoom: 6 },
+  Missouri: { center: [-91.8318, 37.9643], zoom: 6 },
+  Montana: { center: [-110.3626, 46.8797], zoom: 6 },
+  Nebraska: { center: [-99.9018, 41.4925], zoom: 6 },
+  Nevada: { center: [-116.4194, 38.8026], zoom: 6 },
+  "New Hampshire": { center: [-71.5724, 43.1939], zoom: 7 },
+  "New Jersey": { center: [-74.4057, 40.0583], zoom: 7 },
+  "New Mexico": { center: [-105.8701, 34.5199], zoom: 6 },
+  "New York": { center: [-74.2179, 43.2994], zoom: 6 },
+  "North Carolina": { center: [-79.0193, 35.7596], zoom: 6 },
+  "North Dakota": { center: [-101.002, 47.5515], zoom: 6 },
+  Ohio: { center: [-82.9071, 40.4173], zoom: 6 },
+  Oklahoma: { center: [-97.0929, 35.0078], zoom: 6 },
+  Oregon: { center: [-120.5542, 43.8041], zoom: 6 },
+  Pennsylvania: { center: [-77.1945, 41.2033], zoom: 6 },
+  "Rhode Island": { center: [-71.4774, 41.5801], zoom: 7 },
+  "South Carolina": { center: [-81.1637, 33.8361], zoom: 6 },
+  "South Dakota": { center: [-99.9018, 43.9695], zoom: 6 },
+  Tennessee: { center: [-86.5804, 35.5175], zoom: 6 },
+  Texas: { center: [-99.9018, 31.9686], zoom: 5 },
+  Utah: { center: [-111.0937, 39.321], zoom: 6 },
+  Vermont: { center: [-72.5778, 44.5588], zoom: 7 },
+  Virginia: { center: [-78.6569, 37.4316], zoom: 6 },
+  Washington: { center: [-120.7401, 47.7511], zoom: 6 },
+  "West Virginia": { center: [-80.4549, 38.5976], zoom: 6 },
+  Wisconsin: { center: [-88.7879, 43.7844], zoom: 6 },
+  Wyoming: { center: [-107.2903, 43.0759], zoom: 6 },
+};
+
+const stateAbbreviations: { [key: string]: string } = {
+  Alabama: "AL",
+  Alaska: "AK",
+  Arizona: "AZ",
+  Arkansas: "AR",
+  California: "CA",
+  Colorado: "CO",
+  Connecticut: "CT",
+  Delaware: "DE",
+  Florida: "FL",
+  Georgia: "GA",
+  Idaho: "ID",
+  Illinois: "IL",
+  Indiana: "IN",
+  Iowa: "IA",
+  Kansas: "KS",
+  Kentucky: "KY",
+  Louisiana: "LA",
+  Maine: "ME",
+  Maryland: "MD",
+  Massachusetts: "MA",
+  Michigan: "MI",
+  Minnesota: "MN",
+  Mississippi: "MS",
+  Missouri: "MO",
+  Montana: "MT",
+  Nebraska: "NE",
+  Nevada: "NV",
+  "New Hampshire": "NH",
+  "New Jersey": "NJ",
+  "New Mexico": "NM",
+  "New York": "NY",
+  "North Carolina": "NC",
+  "North Dakota": "ND",
+  Ohio: "OH",
+  Oklahoma: "OK",
+  Oregon: "OR",
+  Pennsylvania: "PA",
+  "Rhode Island": "RI",
+  "South Carolina": "SC",
+  "South Dakota": "SD",
+  Tennessee: "TN",
+  Texas: "TX",
+  Utah: "UT",
+  Vermont: "VT",
+  Virginia: "VA",
+  Washington: "WA",
+  "West Virginia": "WV",
+  Wisconsin: "WI",
+  Wyoming: "WY",
+  // Add other states as needed
+};
+
 export default function Home() {
-  const [data, setData] = useState<{ programs: Program[] }>({
-    programs: programsData.programs,
-  });
-  const [selectedLocation, setSelectedLocation] =
-    useState<string>("Select Location");
+  const [data, setData] = useState<{ programs: Program[] }>({ programs: programsData.programs });
+  const [selectedLocation, setSelectedLocation] = useState<string>("Select Location");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [filteredPrograms, setFilteredPrograms] = useState<Program[]>(
-    programsData.programs
-  );
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markers = useRef<mapboxgl.Marker[]>([]);
+  const [filteredPrograms, setFilteredPrograms] = useState<Program[]>(programsData.programs);
+  const [searchLocationCoords, setSearchLocationCoords] = useState<[number, number] | null>(null);
 
-  useEffect(() => {
-    if (map.current) return; // initialize map only once
-    if (!mapContainer.current) return;
+  // Mapbox refs and functions removed - now in MapComponent
+  // const mapContainer = useRef<HTMLDivElement>(null);
+  // const map = useRef<mapboxgl.Map | null>(null);
+  // const markers = useRef<mapboxgl.Marker[]>([]);
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v12",
-      center: DEFAULT_LOCATIONS["Select Location"].center,
-      zoom: DEFAULT_LOCATIONS["Select Location"].zoom,
-      minZoom: 3,
-      maxZoom: 15,
-    });
+  // Function to clear all markers removed - now in MapComponent
+  // const clearMarkers = () => { ... }
 
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
-
-    // Clean up on unmount
-    return () => {
-      if (map.current) {
-        map.current.remove();
-      }
-    };
-  }, []);
-
-  // Function to clear all markers
-  const clearMarkers = () => {
-    markers.current.forEach((marker) => marker.remove());
-    markers.current = [];
-  };
-
-  // Function to add markers for programs
-  const addProgramMarkers = async (programs: Program[]) => {
-    if (!map.current) return;
-    clearMarkers();
-
-    for (const program of programs) {
-      try {
-        const address = `${program.address} ${program.address2} ${program.city} ${program.state} ${program.zip}`;
-        const response = await axios.get(
-          `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(
-            address
-          )}&access_token=${mapboxgl.accessToken}`
-        );
-
-        if (response.data.features && response.data.features.length > 0) {
-          const [lng, lat] = response.data.features[0].geometry.coordinates;
-
-          // Create popup content
-          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-            <div class="p-4 rounded-lg">
-              <div class="flex items-start gap-3">
-                <div class="flex-1">
-                  <h4 class="font-semibold text-cyan-600 text-sm mb-1">
-                    ${program.programType}
-                  </h4>
-                  <p class="text-xs text-gray-600 mb-1">
-                    ${program.region}
-                  </p>
-                  <p class="text-xs text-gray-500 mb-1">📞 (555)-55555</p>
-                  <p class="text-xs text-cyan-500 mb-3">
-                    💻 www.examplewebsite.org
-                  </p>
-                  <div class="mt-4 text-center">
-                    <button 
-                      onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                        program.address +
-                          " " +
-                          program.address2 +
-                          " " +
-                          program.city +
-                          " " +
-                          program.state +
-                          " " +
-                          program.zip
-                      )}', '_blank')"
-                      class="block w-full bg-cyan-400 text-white px-4 py-3 rounded-full text-xs font-semibold hover:bg-cyan-500 transition-colors"
-                    >
-                      View Directions
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `);
-
-          // Add marker with popup
-          const marker = new mapboxgl.Marker()
-            .setLngLat([lng, lat])
-            .setPopup(popup)
-            .addTo(map.current);
-
-          markers.current.push(marker);
-        }
-      } catch (error) {
-        console.error("Error geocoding address:", error);
-      }
-    }
-  };
+  // Function to add markers for programs removed - now in MapComponent
+  // const addProgramMarkers = async (programsToAdd: Program[]) => { ... }
 
   // Handle location change
   const handleLocationChange = (location: string) => {
     setSelectedLocation(location);
 
-    // Filter programs based on selected location
+    // Filter programs based on selected location using abbreviation mapping
+    let filtered = data.programs;
     if (location !== "Select Location") {
-      const filtered = data.programs.filter(
-        (program) =>
-          program.state === location ||
-          (location === "DMV" && ["DC", "MD", "VA"].includes(program.state))
-      );
-      setFilteredPrograms(filtered);
-      addProgramMarkers(filtered);
+      const locationAbbreviation = stateAbbreviations[location];
+      if (locationAbbreviation) {
+         filtered = data.programs.filter(
+           (program) =>
+             program.state === locationAbbreviation ||
+             (location === "DMV" && ["DC", "MD", "VA"].includes(program.state))
+         );
+      } else if (location === "DMV") {
+         filtered = data.programs.filter(
+           (program) => ["DC", "MD", "VA"].includes(program.state)
+         );
+      } else {
+        // If location is not in the mapping and not DMV, show no programs
+        filtered = [];
+      }
     } else {
-      setFilteredPrograms(data.programs);
-      addProgramMarkers(data.programs);
+      // If "Select Location" is chosen, show all programs
+      filtered = data.programs;
     }
 
-    // Update map view
-    if (map.current && DEFAULT_LOCATIONS[location]) {
-      map.current.flyTo({
-        center: DEFAULT_LOCATIONS[location].center,
-        zoom: DEFAULT_LOCATIONS[location].zoom,
-        duration: 2000,
-      });
-    }
+    setFilteredPrograms(filtered);
+    // Removed direct call to addProgramMarkers here, MapComponent will handle based on filteredPrograms prop
+    // addProgramMarkers(filtered);
+
+    // Map view update logic moved to MapComponent useEffect
   };
 
   // Handle search
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery.trim() || !map.current) return;
+    if (!searchQuery.trim()) return;
 
     setIsSearching(true);
+    setSearchLocationCoords(null); // Clear previous search coordinates on new search
+
     try {
       const response = await axios.get(
         `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(
           searchQuery
-        )}&access_token=${mapboxgl.accessToken}`
+        )}&access_token=${mapboxgl.accessToken}` // Mapbox access token still needed here for search geocoding
       );
 
       if (response.data.features && response.data.features.length > 0) {
+        // Get coordinates of the original search query
         const [lng, lat] = response.data.features[0].geometry.coordinates;
-
-        clearMarkers();
 
         // Filter programs that match the search query
         const matchingPrograms = data.programs.filter(
@@ -216,89 +225,50 @@ export default function Home() {
             program.address2.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
-        // Update filtered programs
+        // Update filtered programs list
         setFilteredPrograms(matchingPrograms);
 
-        // Add markers for matching programs
-        for (const program of matchingPrograms) {
+        // Determine coordinates to center the map on
+        if (matchingPrograms.length > 0) {
+          // If programs match, geocode the first one to center the map on a program location
           try {
-            const address = `${program.address} ${program.address2} ${program.city} ${program.state} ${program.zip}`;
+            const firstMatch = matchingPrograms[0];
+            const programAddress = `${firstMatch.address} ${firstMatch.address2} ${firstMatch.city} ${firstMatch.state} ${firstMatch.zip}`;
             const programResponse = await axios.get(
               `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(
-                address
+                programAddress
               )}&access_token=${mapboxgl.accessToken}`
             );
 
-            if (
-              programResponse.data.features &&
-              programResponse.data.features.length > 0
-            ) {
-              const [programLng, programLat] =
-                programResponse.data.features[0].geometry.coordinates;
-
-              // Create popup content
-              const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-                <div class="p-4 rounded-xl">
-                  <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 bg-cyan-400 rounded-full flex items-center justify-center text-white text-sm">
-                      👟
-                    </div>
-                    <div class="flex-1">
-                      <h4 class="font-semibold text-cyan-600 text-sm mb-1">
-                        ${program.programType}
-                      </h4>
-                      <p class="text-xs text-gray-600 mb-1">
-                        ${program.region}
-                      </p>
-                      <p class="text-xs text-gray-500 mb-1">📞 (555)-55555</p>
-                      <p class="text-xs text-cyan-500 mb-3">
-                        💻 www.examplewebsite.org
-                      </p>
-                      <div class="mt-4 text-center">
-                        <button 
-                          onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                            program.address +
-                              " " +
-                              program.address2 +
-                              " " +
-                              program.city +
-                              " " +
-                              program.state +
-                              " " +
-                              program.zip
-                          )}', '_blank')"
-                          class="block w-full bg-cyan-400 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-cyan-500 transition-colors"
-                        >
-                          View Directions
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              `);
-
-              // Add marker with popup
-              const marker = new mapboxgl.Marker()
-                .setLngLat([programLng, programLat])
-                .setPopup(popup)
-                .addTo(map.current);
-
-              markers.current.push(marker);
+            if (programResponse.data.features && programResponse.data.features.length > 0) {
+              const [programLng, programLat] = programResponse.data.features[0].geometry.coordinates;
+              setSearchLocationCoords([programLng, programLat]); // Center on the program's coordinates
+            } else {
+               console.error('Could not geocode the first matching program address for centering.');
+               // Fallback: center on the original search query coordinates if program geocoding fails
+               setSearchLocationCoords([lng, lat]);
             }
-          } catch (error) {
-            console.error("Error geocoding program address:", error);
+          } catch (programError) {
+             console.error('Error during geocoding of the first matching program address for centering:', programError);
+             // Fallback: center on the original search query coordinates on error
+            setSearchLocationCoords([lng, lat]);
           }
+        } else {
+          // If no programs match, center on the original search query coordinates
+           console.log("No matching programs found, centering on search query location.");
+           setSearchLocationCoords([lng, lat]);
         }
 
-        // Fly to the searched location
-        map.current.flyTo({
-          center: [lng, lat],
-          zoom: 12,
-          duration: 2000,
-        });
+      } else {
+        // Handle case where search query doesn't return a location
+        console.log("Search query did not return a valid location.");
+        setFilteredPrograms([]); // Clear list
+        setSearchLocationCoords(null); // Clear search coords
       }
     } catch (error) {
-      console.error("Error searching location:", error);
+      console.error('Error searching location or geocoding:', error);
+      setFilteredPrograms([]); // Clear list on error
+      setSearchLocationCoords(null); // Clear search coords on error
     } finally {
       setIsSearching(false);
     }
@@ -306,22 +276,18 @@ export default function Home() {
 
   // Handle reset
   const handleReset = () => {
-    if (!map.current) return;
+    // Removed map.current check
+    // clearMarkers(); // Handled by MapComponent when programs prop changes
 
-    clearMarkers();
-
-    // Reset to default view showing continental USA
-    map.current.flyTo({
-      center: DEFAULT_LOCATIONS["Select Location"].center,
-      zoom: DEFAULT_LOCATIONS["Select Location"].zoom,
-      duration: 2000,
-    });
+    // Reset to default view showing continental USA - MapComponent will handle based on selectedLocation prop
+    // map.current.flyTo({ ... });
 
     // Reset selected location and show all programs
     setSelectedLocation("Select Location");
     setSearchQuery("");
-    setFilteredPrograms(data.programs);
-    addProgramMarkers(data.programs);
+    setFilteredPrograms(data.programs); // MapComponent will add markers for all programs
+    // Removed direct call to addProgramMarkers here
+    // addProgramMarkers(data.programs);
   };
 
   return (
@@ -333,6 +299,7 @@ export default function Home() {
         >
           Where are we located?
         </h1>
+
         <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-4">
           <div className="relative">
             <select
@@ -359,6 +326,7 @@ export default function Home() {
               ></path>
             </svg>
           </div>
+
           <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
@@ -391,6 +359,7 @@ export default function Home() {
           </button>
         </div>
       </div>
+
       <div className="flex flex-1 min-h-0 min-w-0 w-[80vw] mx-auto">
         <div className="w-full lg:w-1/3 bg-white rounded-none p-6 shadow-lg h-full overflow-y-auto">
           <div className="mb-6">
@@ -402,53 +371,16 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="space-y-4  overflow-y-auto">
-            {filteredPrograms?.map((program, index) => (
-              <div
-                key={index}
-                className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
-              >
-                <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4">
-                  👟
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-cyan-600 text-sm">
-                    {program.programType}
-                  </h4>
-                  <p className="text-xs text-gray-600">
-                    {program.address}, {program.city}, {program.state}{" "}
-                    {program.zip}
-                  </p>
-                  <p className="text-xs text-gray-500">📞 (555)-55555</p>
-                  <p className="text-xs text-gray-500">
-                    Age Range: {program.ageRange}
-                  </p>
-                  <p className="text-xs text-cyan-500">
-                    {program.meetingDay} {program.meetingTime}
-                  </p>
-                </div>
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 5l7 7-7 7"
-                  ></path>
-                </svg>
-              </div>
-            ))}
-          </div>
+          <ProgramList programs={filteredPrograms} />
         </div>
+
         <div className="w-full lg:w-2/3 relative h-full min-h-0 min-w-0">
-          <div
-            ref={mapContainer}
-            className="w-full h-full rounded-none shadow-lg min-h-0 min-w-0"
-          ></div>
+           <MapComponent 
+              programs={filteredPrograms} 
+              selectedLocation={selectedLocation} 
+              searchQuery={searchQuery} 
+              searchLocationCoords={searchLocationCoords} 
+            />
         </div>
       </div>
     </div>
